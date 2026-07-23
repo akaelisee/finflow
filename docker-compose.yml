@@ -35,6 +35,7 @@ services:
       JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret-change-me}
     ports:
       - "3000:3000"
+      - "5555:5555"
     volumes:
       - ./apps/api:/app/apps/api
       - ./packages/shared:/app/packages/shared

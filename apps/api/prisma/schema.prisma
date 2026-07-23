@@ -1,0 +1,140 @@
+// ============================================================================
+// FinFlow — Schéma Prisma
+// ============================================================================
+// Ce fichier décrit la structure de la base de données PostgreSQL.
+// Chaque `model` correspond à une table SQL.
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+  // Décommenter en cas de problème sur Alpine Linux (Docker) :
+  // binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------------------------------------------------------
+// USERS — les utilisateurs de l'application
+// ----------------------------------------------------------------------------
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  accounts     Account[]
+  categories   Category[]
+  budgets      Budget[]
+
+  @@map("users")
+}
+
+// ----------------------------------------------------------------------------
+// ACCOUNTS — les comptes bancaires
+// ----------------------------------------------------------------------------
+model Account {
+  id             String      @id @default(uuid()) @db.Uuid
+  userId         String      @map("user_id") @db.Uuid
+  name           String
+  bank           String
+  type           AccountType @default(CHECKING)
+  initialBalance Int         @map("initial_balance") // Centimes
+  currency       String      @default("EUR") @db.Char(3)
+  color          String      @default("#378ADD")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+enum AccountType {
+  CHECKING // Compte courant
+  SAVINGS  // Épargne
+  CREDIT   // Crédit
+
+  @@map("account_type")
+}
+
+// ----------------------------------------------------------------------------
+// CATEGORIES — Alimentation, Transports, etc.
+// ----------------------------------------------------------------------------
+model Category {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @map("user_id") @db.Uuid // null = catégorie système
+  name      String
+  color     String
+  icon      String
+  isDefault Boolean  @default(false) @map("is_default")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user         User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  budgets      Budget[]
+
+  @@index([userId])
+  @@map("categories")
+}
+
+// ----------------------------------------------------------------------------
+// TRANSACTIONS — chaque mouvement d'argent
+// ----------------------------------------------------------------------------
+model Transaction {
+  id              String          @id @default(uuid()) @db.Uuid
+  accountId       String          @map("account_id") @db.Uuid
+  categoryId      String?         @map("category_id") @db.Uuid
+  amount          Int             // Centimes. Négatif = dépense, positif = revenu
+  label           String
+  transactionDate DateTime        @map("transaction_date") @db.Date
+  importedFrom    ImportSource    @default(MANUAL) @map("imported_from")
+  notes           String?
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  account  Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([accountId])
+  @@index([categoryId])
+  @@index([transactionDate])
+  @@map("transactions")
+}
+
+enum ImportSource {
+  MANUAL      // Saisie manuelle
+  CSV_IMPORT  // Import CSV
+
+  @@map("import_source")
+}
+
+// ----------------------------------------------------------------------------
+// BUDGETS — limites mensuelles par catégorie
+// ----------------------------------------------------------------------------
+model Budget {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  categoryId String   @map("category_id") @db.Uuid
+  month      String   @db.Char(7) // Format "YYYY-MM"
+  amount     Int      // Limite en centimes
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, categoryId, month]) // un seul budget par cat/mois/user
+  @@index([userId])
+  @@map("budgets")
+}
