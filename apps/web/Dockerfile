@@ -24,7 +24,7 @@ FROM base AS build
 COPY tsconfig.base.json ./
 COPY apps/web ./apps/web
 COPY packages/shared ./packages/shared
-RUN npm run build --workspace=@finflow/web
+RUN npm run build --workspace=web
 
 FROM nginx:alpine AS production
 COPY --from=build /app/apps/web/dist /usr/share/nginx/html

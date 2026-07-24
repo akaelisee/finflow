@@ -1,0 +1,19 @@
+import { Link } from 'react-router-dom';
+import { RegisterForm } from '@/features/auth';
+
+export function RegisterPage() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+      <div className="w-full max-w-sm rounded-lg border border-gray-200 bg-white p-8">
+        <h1 className="mb-6 text-xl font-bold text-gray-900">Créer un compte FinFlow</h1>
+        <RegisterForm />
+        <p className="mt-4 text-center text-sm text-gray-500">
+          Déjà un compte ?{' '}
+          <Link to="/login" className="font-medium text-brand-600 hover:underline">
+            Se connecter
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+}
