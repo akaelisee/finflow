@@ -12,6 +12,7 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
     "types": ["vite/client"],
+    "noEmit": true,
     "paths": {
       "@finflow/shared": ["../../packages/shared/src"],
       "@/*": ["./src/*"]
