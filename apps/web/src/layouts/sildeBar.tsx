@@ -4,15 +4,46 @@ import DashboardIcon from "../assets/icons/dashboradIcon.svg";
 import TransactionsIcon from "../assets/icons/transactionIcon.svg";
 import AccountsIcon from "../assets/icons/accounts.svg";
 import BudgetsIcon from "../assets/icons/buldgetIcon.svg";  
+import SettingIcon from "@/assets/icons/settings.svg";  
+import CategoryIcon from "@/assets/icons/category.svg";  
+import HelpIcon from "@/assets/icons/help.svg";  
+import DeconnexionIcon from "@/assets/icons/deconnexion.svg";  
+import { title } from "process";
 
-const Aside = () => {
+const SildeBar = () => {
 
-     const menu = [
-        {id: 1, title: 'Dashboard', link: '', icon: DashboardIcon },
-        {id: 2, title: 'Transaction', link: 'transaction', icon: TransactionsIcon },
-        {id: 3, title: 'Accounts', link: 'accounts', icon: AccountsIcon },
-        {id: 4, title: 'Imports CSV', link: 'imports', icon: ImportIcon },
-        {id: 5, title: 'Budgets', link: 'budgets', icon: BudgetsIcon }
+    //  const menu = [
+    //     {id: 1, title: 'Dashboard', link: '', icon: DashboardIcon },
+    //     {id: 2, title: 'Transaction', link: 'transaction', icon: TransactionsIcon },
+    //     {id: 3, title: 'Accounts', link: 'accounts', icon: AccountsIcon },
+    //     {id: 4, title: 'Imports CSV', link: 'imports', icon: ImportIcon },
+    //     {id: 5, title: 'Budgets', link: 'budgets', icon: BudgetsIcon }
+    //  ];
+
+      const menus = [
+        {
+          title : 'General', 
+          menu: [
+            {id: 1, title: 'Dashboard', link: '', icon: DashboardIcon },
+            {id: 2, title: 'Transaction', link: 'transaction', icon: TransactionsIcon },
+            {id: 3, title: 'Accounts', link: 'accounts', icon: AccountsIcon },
+            {id: 4, title: 'Imports CSV', link: 'imports', icon: ImportIcon }
+          ] 
+        }, 
+        {
+          title : 'Gestion', 
+          menu: [
+            {id: 1, title: 'Budgets', link: 'budgets', icon: BudgetsIcon },
+            {id: 2, title: 'Catégories', link: 'catégories', icon: CategoryIcon }
+          ] 
+        }, 
+        {
+          title : 'Compte', 
+          menu: [
+            {id: 1, title: 'Paremètres', link: 'settings', icon: SettingIcon },
+            {id: 2, title: 'Aide', link: 'help', icon: HelpIcon }
+          ] 
+        }
      ];
 
     return ( 
@@ -25,9 +56,16 @@ const Aside = () => {
                       </div>
                       <span className='font-semibold text-2xl hidden lg:block'>FinFlow</span>
                     </div>
-                    <ul className='flex flex-col gap-3'>
+                    <>
                       {
-                        menu.map((menuItem, index) => (
+                        menus.map((menusItem, index) => (
+                          <p className="decoration-current">{menusItem.title}</p>
+                        ))
+                      }
+                    </>
+                    {/* <ul className='flex flex-col gap-3'>
+                      {
+                        menus.map((menuItem) => (
                           <li key={menuItem.id} className='_bg-[#E6F1FB] rounded-md flex gap-3 cursor-pointer p-2 mx-auto lg:mx-0'>
                             <Link to={menuItem.link} className='flex gap-3 cursor-pointer'> 
                               <img className='w-7 lg:w-5' src={menuItem.icon}  />
@@ -36,7 +74,7 @@ const Aside = () => {
                           </li>
                         ))
                       }
-                    </ul>
+                    </ul> */}
                   </div>
                   <div className="">
                     <hr className='border-1.5' />
@@ -55,4 +93,4 @@ const Aside = () => {
      );
 }
  
-export default Aside;
+export default SildeBar;
