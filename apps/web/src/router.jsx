@@ -7,6 +7,10 @@ import Transaction from './pages/transaction';
 import Comptes from './pages/compte';
 import Budgets from './pages/budget';
 import Dashboard from './pages/dashboard'
+import SettingPage from './pages/settings'
+import HelpPage from './pages/helpPage'
+import NoPage from './pages/noPage'
+import ImportCsvPage from './pages/importCsvPage'
 import App from './App';
 
 export const Router = () => {
@@ -29,8 +33,25 @@ export const Router = () => {
               />
 
               <Route
+                path="imports"
+                element={<ImportCsvPage />}
+              />
+
+              <Route
                 path="budgets"
                 element={<Budgets />}
+              />
+              <Route
+                path="settings"
+                element={<SettingPage />}
+              />
+              <Route
+                path="help"
+                element={<HelpPage />}
+              />
+              <Route
+                path="noPage"
+                element={<NoPage />}
               />
 
           </Route>
