@@ -9,6 +9,7 @@ import Budgets from './pages/budget';
 import Dashboard from './pages/dashboard'
 import SettingPage from './pages/settings'
 import HelpPage from './pages/helpPage'
+import CategoriePage from './pages/categoriePage'
 import NoPage from './pages/noPage'
 import ImportCsvPage from './pages/importCsvPage'
 import App from './App';
@@ -44,6 +45,10 @@ export const Router = () => {
               <Route
                 path="settings"
                 element={<SettingPage />}
+              />
+              <Route
+                path="catégories"
+                element={<CategoriePage />}
               />
               <Route
                 path="help"
