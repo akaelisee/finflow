@@ -10,8 +10,6 @@ const RowsOverviewCategory = ({ categoryTotal }: Props) => {
             return itemCategpry.isDefault === false;
     });
 
-    console.log(personalizedCategoryFilter);
-
     return(
         <div className="grid grid-cols-1 gap-4 mt-10 md:grid-cols-3">
             <div className="flex flex-col gap-3 bg-[#F9F8F4] rounded-md p-4">

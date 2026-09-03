@@ -4,9 +4,13 @@ import { useEffect, useState } from "react";
 import { getCategories, getCategoriesId, createCategories } from "@/api/categorys";
 import { Categories } from "@/types/category";
 import RowsListCategory from "@/components/category/rowsListCategory";
+import { IconClockSearch, IconPlus, IconX } from "@tabler/icons-react";
+import FormCategory from "@/components/category/formCategory";
+
 
 const CategoriePage = () => {
   const [category, setCategory] = useState<Categories[]>([])
+  const  [open, setOpen] = useState(false)
 
   useEffect(() => {
     getCategories().then((data) => {
@@ -17,18 +21,37 @@ const CategoriePage = () => {
     })
   }, []);
 
+  const handleAddCategory = async (categorie: Categories) => {
+    const newCategory = await createCategories(categorie)
+    setCategory((prevNewCategory) => [
+      ...prevNewCategory,
+      newCategory
+    ]);
+    setOpen(false);
+  } 
 
     return ( 
         <>
-          <div className="flex justify-between">
-            <div className="">
+        
+          <div className="flex justify-between relative z-10">
+            <div>
               <p className='text-2xl font-semibold'>Catégories</p>
               <span>Organisez vos dépenses avec des catégories personnalisées</span>
             </div>
-            <div className="">
-              <button type="button" className="bg-blue-500 text-white rounded-md p-2"> + Nouvelle catégories</button>
+          
+            <div>
+              <button onClick={() => setOpen(true)} className="flex flex-row gap-1 bg-blue-500 items-center cursor-pointer text-white rounded-md p-2"> 
+                <IconPlus size={20} /> 
+                <span>Nouvelle catégories</span> 
+              </button>
             </div>
-          </div>   
+          </div>  
+
+          <FormCategory 
+            open={open} 
+            onClose={setOpen}
+            onAdd={handleAddCategory}
+          /> 
 
           <RowsOverviewCategory categoryTotal={category}/>  
 
@@ -39,7 +62,7 @@ const CategoriePage = () => {
             </select>
           </div>  
 
-          <RowsListCategory categoryLists ={category} />
+          <RowsListCategory open={open} onClose={setOpen} categoryLists ={category} />
 
         </>
      );

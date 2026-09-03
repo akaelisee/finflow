@@ -51,3 +51,7 @@ export function CategoryIcon({ name, ...rest }: Props) {
   const Icon = ICONS[name as keyof typeof ICONS] ?? IconQuestionMark;
   return <Icon {...rest} />;
 }
+
+export function AddCategoryIcon({ ...rest }: Props) {
+  return 
+}
