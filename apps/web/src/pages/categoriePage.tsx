@@ -1,7 +1,7 @@
 import RowsOverviewCategory from "@/components/category/rowsOverviewCategory";
 import { CategoryIcon } from "@/utils/categoryIcon";
 import { useEffect, useState } from "react";
-import { getCategories, getCategoriesId, createCategories } from "@/api/categorys";
+import { getCategories, getCategoriesId, createCategories, deleteCategories, updateCategories } from "@/api/categorys";
 import { Categories } from "@/types/category";
 import RowsListCategory from "@/components/category/rowsListCategory";
 import { IconClockSearch, IconPlus, IconX } from "@tabler/icons-react";
@@ -11,6 +11,13 @@ import FormCategory from "@/components/category/formCategory";
 const CategoriePage = () => {
   const [category, setCategory] = useState<Categories[]>([])
   const  [open, setOpen] = useState(false)
+      const [updateCategoryClick, setUpdateCategoryClick] = useState<{
+        id: string,
+      categorie: Categories | null
+      }>({
+        id: '',
+        categorie: null
+      })
 
   useEffect(() => {
     getCategories().then((data) => {
@@ -21,6 +28,8 @@ const CategoriePage = () => {
     })
   }, []);
 
+  console.log(updateCategoryClick?.categorie?.icon);
+
   const handleAddCategory = async (categorie: Categories) => {
     const newCategory = await createCategories(categorie)
     setCategory((prevNewCategory) => [
@@ -30,10 +39,54 @@ const CategoriePage = () => {
     setOpen(false);
   } 
 
+  const handleUpdate = (id: string, categorie: Categories) => {
+  setUpdateCategoryClick({ id, categorie });
+  setOpen(true);
+}
+
+  const handleFormUpdate = async (id: string, categorie: Categories | null) => {
+    if (!categorie) return;
+    
+    try {
+      
+      const payload = {
+        name: categorie.name,
+        color: categorie.color,
+        icon: categorie.icon,
+      };
+      
+      const updatedCategory = await updateCategories(id, payload);
+      setCategory((prev) =>
+        prev.map((cat) => (cat.id === id ? updatedCategory : cat))
+      );
+      setUpdateCategoryClick({ id: '', categorie: null });
+      setOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  // Fermeture centralisée : réinitialise le mode édition à chaque fermeture
+  const handleCloseForm = (value: boolean) => {
+    setOpen(value);
+    if (!value) {
+      setUpdateCategoryClick({ id: '', categorie: null });
+    }
+  }
+
+  const handleDelete = async (id:string) => {
+    try {
+      await deleteCategories(id);
+      setCategory((prevCategory) => prevCategory.filter((cat) => cat.id !== id))
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
     return ( 
         <>
         
-          <div className="flex justify-between relative z-10">
+          <div className="flex justify-between relative z-0">
             <div>
               <p className='text-2xl font-semibold'>Catégories</p>
               <span>Organisez vos dépenses avec des catégories personnalisées</span>
@@ -49,8 +102,10 @@ const CategoriePage = () => {
 
           <FormCategory 
             open={open} 
-            onClose={setOpen}
+            onClose={handleCloseForm}          
             onAdd={handleAddCategory}
+            onFormUpdate={handleFormUpdate}
+            categoryToEdit={updateCategoryClick.categorie}
           /> 
 
           <RowsOverviewCategory categoryTotal={category}/>  
@@ -62,7 +117,13 @@ const CategoriePage = () => {
             </select>
           </div>  
 
-          <RowsListCategory open={open} onClose={setOpen} categoryLists ={category} />
+          <RowsListCategory 
+            open={open} 
+            onClose={handleCloseForm}          
+            categoryLists={category}
+            onDelete={handleDelete} 
+            onUpdate={handleUpdate}            
+          />
 
         </>
      );

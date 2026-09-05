@@ -6,13 +6,17 @@ import AlertDrop from "./alertDrop";
 
 type Props = {
   categoryLists: Categories[]
-   open : boolean,
-    onClose: (Value: boolean) => void
+  open : boolean,
+  onClose: (value: boolean) => void
+  onDelete: (value: string) => void
+  onUpdate: (id: string, data: Categories) => void
 }
 
-const RowsListCategory = ({ categoryLists, open, onClose }:Props) => {
+const RowsListCategory = ({ categoryLists, open, onClose, onDelete, onUpdate }:Props) => {
 
   const [btnAll, setBtnAll] = useState(9)
+  const [openBox, setOpenBox] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] =  useState<string | null>(null);
 
    const listCategoryPersonalized = categoryLists.filter((categoryList) => {
       return categoryList.isDefault === true
@@ -22,6 +26,10 @@ const RowsListCategory = ({ categoryLists, open, onClose }:Props) => {
       return categoryList.isDefault === false
    });
 
+   const handleDeleteClick = (id: string) => {
+    setCategoryToDelete(id),
+    setOpenBox(true)
+   }
 
     return(
       <div className="my-7">
@@ -30,19 +38,21 @@ const RowsListCategory = ({ categoryLists, open, onClose }:Props) => {
 
           {
             listCategorySysteme.map((personal, index) => (
-              <div key={index} className="flex flex-col gap-3 bg-white border rounded-md p-4">
+              <div key={personal.id} className="flex flex-col gap-3 bg-white border rounded-md p-4">
                 <div className="flex justify-between">
                   <div className="">
                     <CategoryBadge badges={personal}/>
                   </div>
                   <div className="flex gap-2">
                     <div 
-                    
+                    onClick={() => onUpdate(personal.id, personal)}
                       className="cursor-pointer bg-[#f9f8f4] w-7 h-7 biorder text-center rounded-sm p-1"
                     >
                       <IconEdit stroke={2} />
                     </div>
-                    <div className="cursor-pointer bg-[#f9f8f4] w-7 h-7 biorder text-center rounded-sm p-1"><IconTrash stroke={2} /></div>
+                    <div 
+                    onClick={() => handleDeleteClick(personal.id)}
+                    className="cursor-pointer bg-[#f9f8f4] w-7 h-7 biorder text-center rounded-sm p-1"><IconTrash stroke={2} /></div>
                   </div>
                 </div>
                   <span className='text-black font-semibold'>{personal.name}</span>
@@ -64,20 +74,34 @@ const RowsListCategory = ({ categoryLists, open, onClose }:Props) => {
 
         </div> 
 
-        {/* <AlertDrop /> */}
+        <AlertDrop 
+          open={openBox} 
+          onOpen={setOpenBox}
+          onConfirm={() => {
+            if (categoryToDelete) {
+              onDelete(categoryToDelete)
+            }
+            setOpenBox(false)
+            setCategoryToDelete(null)
+          }}
+        />
           
-          <p className="my-10 uppercase text-lg text-gray-500">Catégories personnalisées · {listCategoryPersonalized.length}</p> 
+          <p className="my-10 uppercase text-lg text-gray-500">Catégories Systeme · {listCategoryPersonalized.length}</p> 
           <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-3">
             {
               listCategoryPersonalized.slice(0, btnAll).map((personal, index) => (
-                <div key={index} className="flex flex-col gap-3 bg-white border rounded-md p-4">
+                <div key={personal.id} className="flex flex-col gap-3 bg-white border rounded-md p-4">
                   <div className="flex justify-between">
                     <div className="">
                       <CategoryBadge badges={personal}/>
                     </div>
                     <div className="flex gap-2">
-                      <div className="bg-[#f9f8f4] biorder rounded-sm p-1"><IconEdit stroke={2} /></div>
-                      <div className=""><IconTrash stroke={2} /></div>
+                      <div 
+                      onClick={() => onUpdate(personal.id, personal)}
+                        className="bg-[#f9f8f4] biorder rounded-sm p-1"><IconEdit stroke={2} /></div>
+                      <div 
+                    onClick={() => handleDeleteClick(personal.id)}
+                    className="cursor-pointer bg-[#f9f8f4] w-7 h-7 biorder text-center rounded-sm p-1"><IconTrash stroke={2} /></div>
                     </div>
                   </div>
                     <span className='text-black font-semibold'>{personal.name}</span>

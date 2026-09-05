@@ -1,19 +1,18 @@
-
 import { Categories } from "@/types/category";
 import { CategoryIcon } from "../../utils/categoryIcon";
 import { IconPlus, IconX } from "@tabler/icons-react";
 import type { Icon } from "@tabler/icons-react";
 import ColorCategory from "./colorCategory";
 import IconFormCategory from "./iconFormCategory";
-import { Value } from "@prisma/client/runtime/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CategoriesPlayload } from "@/types/category";
-import { createCategories } from "@/api/categorys";
 
 type Props = {
-  open : boolean,
-  onClose: (Value: boolean) => void
+  open: boolean,
+  onClose: (value: boolean) => void
   onAdd: (value: Categories) => void
+  onFormUpdate: (id: string, categorie: Categories | null) => void
+  categoryToEdit: Categories | null
 }
 
 type iconType = {
@@ -26,22 +25,33 @@ type colorType = {
   color: string
 }
 
-const FormCategory = ({ open, onClose, onAdd }: Props) => {
+const FormCategory = ({ open, onClose, onAdd, onFormUpdate, categoryToEdit }: Props) => {
+
+    const isEditMode = !!categoryToEdit;
+
     const [selectedIcon, setSelectedIcon] = useState<iconType | null>(null)
     const [selectColor, setSelectedColor] = useState<colorType>({
       index: 0,
       color: "",
     });
     const [nameCategory, setNameCategory] = useState('');
-    const [category, setCategory] = useState<CategoriesPlayload[]>([
-        {
-          userId: "",
-          name: nameCategory,
-          color: selectColor.color,
-          icon: selectedIcon?.name ?? "",
-          isDefault: true,
-        }
-    ]);
+
+    // Préremplit le formulaire quand on passe en mode édition,
+    // et le réinitialise quand on revient en mode ajout
+    useEffect(() => {
+      if (categoryToEdit) {
+        setNameCategory(categoryToEdit.name);
+        setSelectedColor({ index: 0, color: categoryToEdit.color });
+        // ⚠️ l'icône n'est pas préremplie ici : il faut retrouver le composant Icon
+        // correspondant à categoryToEdit.icon (probablement dans iconFormCategory.tsx).
+        // Envoie-moi ce fichier pour que je complète ce point.
+      } else {
+        setNameCategory('');
+        setSelectedColor({ index: 0, color: '' });
+        setSelectedIcon(null);
+      }
+    }, [categoryToEdit]);
+
     const IconComponent = selectedIcon?.Icon;
 
     function handleChange(e: any) {
@@ -52,13 +62,19 @@ const FormCategory = ({ open, onClose, onAdd }: Props) => {
       e.preventDefault();
 
       const dataCategory: CategoriesPlayload = {
+        id: categoryToEdit?.id ?? '',
         userId: "",
         name: nameCategory,
         color: selectColor.color,
         icon: selectedIcon?.name ?? "",
         isDefault: true,
       };
-      onAdd(dataCategory);
+
+      if (isEditMode && categoryToEdit) {
+        onFormUpdate(categoryToEdit.id, dataCategory);
+      } else {
+        onAdd(dataCategory);
+      }
     }
   
     return (
@@ -76,10 +92,15 @@ const FormCategory = ({ open, onClose, onAdd }: Props) => {
 
                <div className="flex justify-between items-center p-5 ">
                   <div className="flex flex-col">
-                    <span className="font-bold text-xl">Nouvelle catégorie</span>
-                    <span className="text-md">Créer une catégorie personnalisée</span>
+                    <span className="font-bold text-xl">
+                      {isEditMode ? "Modifier la catégorie" : "Nouvelle catégorie"}
+                    </span>
+                    <span className="text-md">
+                      {isEditMode ? "Modifier votre catégorie personnalisée" : "Créer une catégorie personnalisée"}
+                    </span>
                   </div>
                   <button 
+                    type="button"
                     onClick={() => onClose(false)}
                     className="bg-slate-200 p-2 border border-gray-300 rounded-md cursor-pointer">
                     <IconX size={20}/>
@@ -122,8 +143,8 @@ const FormCategory = ({ open, onClose, onAdd }: Props) => {
               <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                 <input
                   type="submit"
-                  value={"J'ajoute une categorie"}
-                  className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-blue-500 sm:ml-3 sm:w-auto"
+                  value={isEditMode ? "Enregistrer les modifications" : "J'ajoute une categorie"}
+                  className="cursor-pointer inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-blue-500 sm:ml-3 sm:w-auto"
                 />
                 <button
                   type="button"

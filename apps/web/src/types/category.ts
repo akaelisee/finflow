@@ -1,4 +1,5 @@
 export type Categories = {
+    id: string,
     userId: string,
     name: string,
     color: string,
@@ -7,6 +8,7 @@ export type Categories = {
 }
 
 export interface CategoriesPlayload {
+    id: string,
     userId: string,
     name: string,
     color: string,
