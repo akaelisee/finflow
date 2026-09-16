@@ -22,7 +22,8 @@ export const CreateBudgetSchema = z.object({
 export type CreateBudgetInput = z.infer<typeof CreateBudgetSchema>;
 
 export const UpdateBudgetSchema = z.object({
-  amount: z.number().int('Le montant doit être un entier (centimes)').positive('Le montant doit être positif'),
+  categoryId: z.string().uuid('Catégorie invalide').optional(),
+  amount: z.number().int('Le montant doit être un entier (centimes)').positive('Le montant doit être positif').optional(),
 });
 export type UpdateBudgetInput = z.infer<typeof UpdateBudgetSchema>;
 

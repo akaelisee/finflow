@@ -1,6 +1,6 @@
 import React from "react";
 
-const HelpPage = () => {
+export const HelpPage = () => {
     return ( 
         <>
                 Help Page        

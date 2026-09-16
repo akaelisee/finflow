@@ -3,6 +3,7 @@
  * Ne lance jamais d'erreur : retourne `null` si la ressource n'existe pas.
  */
 
+import type { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma';
 import type { CreateBudgetInput } from '../schemas/budgets.schemas';
 
@@ -32,8 +33,8 @@ export const budgetsRepository = {
     });
   },
 
-  updateAmount(id: string, amount: number) {
-    return prisma.budget.update({ where: { id }, data: { amount }, include: { category: true } });
+  update(id: string, data: Prisma.BudgetUpdateInput) {
+    return prisma.budget.update({ where: { id }, data, include: { category: true } });
   },
 
   delete(id: string) {

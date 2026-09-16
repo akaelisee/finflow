@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import LoginForm from '@/components/login';
+// import LoginForm from '@/components/login';
 
-const Login = () => {
+export const LoginPage = () => {
   return (
     <div className="bg-gradient-to-r from-[#6da6be] via-[#4b859e] to-[#6da6be] w-full min-h-screen flex items-center justify-center gap-16 px-16 flex-col lg:flex-row lg:gap-24">
 
@@ -18,7 +18,7 @@ const Login = () => {
       <div className='bg-white w-full max-w-md rounded-2xl shadow-xl p-10 text-center'>
           <h1 className='text-2xl font-bold mb-1 text-black'>Login</h1>
           <h2 className='text-sm  mb-4 text-black'>Bienvenue sur FinFLow</h2>
-           <LoginForm />
+           {/* <LoginForm /> */}
             <p className="text-sm mt-6">
               Pas de compte ? <Link to="/register" className="text-[#4b859e] font-medium">Créer un compte</Link>
             </p>
@@ -27,4 +27,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;

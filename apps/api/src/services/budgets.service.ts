@@ -8,9 +8,10 @@
 import type { Budget, Category } from '@prisma/client';
 import { ConflictError, ForbiddenError, NotFoundError } from '../lib/errors';
 import { getCurrentMonthKey, getMonthDateRange } from '../lib/month';
+import { pruneUndefined } from '../lib/object-utils';
 import { budgetsRepository } from '../repositories/budgets.repository';
 import { categoriesRepository } from '../repositories/categories.repository';
-import type { CreateBudgetInput } from '../schemas/budgets.schemas';
+import type { CreateBudgetInput, UpdateBudgetInput } from '../schemas/budgets.schemas';
 
 async function assertCategoryAccessible(userId: string, categoryId: string) {
   const category = await categoriesRepository.findById(categoryId);
@@ -47,6 +48,11 @@ export const budgetsService = {
     return Promise.all(budgets.map((budget) => enrich(userId, budget)));
   },
 
+  async getById(userId: string, id: string) {
+    const budget = await assertOwnedBudget(userId, id);
+    return enrich(userId, budget);
+  },
+
   async create(userId: string, input: CreateBudgetInput) {
     await assertCategoryAccessible(userId, input.categoryId);
 
@@ -63,9 +69,23 @@ export const budgetsService = {
     return enrich(userId, budget);
   },
 
-  async update(userId: string, id: string, amount: number) {
+  async update(userId: string, id: string, input: UpdateBudgetInput) {
     const budget = await assertOwnedBudget(userId, id);
-    const updated = await budgetsRepository.updateAmount(budget.id, amount);
+
+    if (input.categoryId && input.categoryId !== budget.categoryId) {
+      await assertCategoryAccessible(userId, input.categoryId);
+
+      const existing = await budgetsRepository.findByUserCategoryMonth(
+        userId,
+        input.categoryId,
+        budget.month,
+      );
+      if (existing) {
+        throw new ConflictError('Un budget existe déjà pour cette catégorie sur ce mois');
+      }
+    }
+
+    const updated = await budgetsRepository.update(budget.id, pruneUndefined(input));
     return enrich(userId, updated);
   },
 

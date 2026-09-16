@@ -19,6 +19,12 @@ export async function categoriesRoutes(fastify: FastifyInstance) {
     return categoriesService.list(DEMO_USER_ID);
   });
 
+  fastify.get<{ Params: { id: string } }>('/api/categories/:id', async (request, reply) => {
+    const params = parseOrRespond(CategoryIdParamSchema, request.params, reply);
+    if (!params) return;
+    return categoriesService.getById(DEMO_USER_ID, params.id);
+  });
+
   fastify.post('/api/categories', async (request, reply) => {
     const body = parseOrRespond(CreateCategorySchema, request.body, reply);
     if (!body) return;

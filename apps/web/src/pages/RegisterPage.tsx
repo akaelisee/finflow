@@ -1,7 +1,7 @@
-import RegisterForm from '@/components/register';
+// import RegisterForm from '@/components/register';
 import { Link } from 'react-router-dom';
 
-const RegisterPage = () => {
+export const RegisterPage = () => {
   return (
     <div className="bg-gradient-to-r from-[#6da6be] via-[#4b859e] to-[#6da6be] w-full min-h-screen flex items-center justify-center gap-16 px-16 flex-col lg:flex-row lg:gap-24">
 
@@ -17,7 +17,7 @@ const RegisterPage = () => {
       <div className='bg-white w-full max-w-md rounded-2xl shadow-xl p-10 text-center'>
           <h1 className='text-2xl font-bold mb-1 text-black'>Register</h1>
           <h2 className='text-sm  mb-4 text-black'>Bienvenue sur FinFLow</h2>
-           <RegisterForm />
+           {/* <RegisterForm /> */}
             <p className="text-sm mt-6">
               Déja un compte ? <Link to="/login" className="text-[#4b859e] font-medium">Connectez-vous</Link>
             </p>

@@ -20,9 +20,23 @@ async function assertEditableCategory(userId: string, id: string) {
   return category;
 }
 
+/** Vérifie que la catégorie existe et est accessible par `userId` (système ou custom du user). */
+async function assertAccessibleCategory(userId: string, id: string) {
+  const category = await categoriesRepository.findById(id);
+  if (!category) throw new NotFoundError('Catégorie introuvable');
+  if (category.userId !== null && category.userId !== userId) {
+    throw new ForbiddenError('Cette catégorie ne vous appartient pas');
+  }
+  return category;
+}
+
 export const categoriesService = {
   list(userId: string) {
     return categoriesRepository.findAllForUser(userId);
+  },
+
+  getById(userId: string, id: string) {
+    return assertAccessibleCategory(userId, id);
   },
 
   create(userId: string, input: CreateCategoryInput) {

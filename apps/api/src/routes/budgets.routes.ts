@@ -23,6 +23,12 @@ export async function budgetsRoutes(fastify: FastifyInstance) {
     return budgetsService.list(DEMO_USER_ID, query.month);
   });
 
+  fastify.get<{ Params: { id: string } }>('/api/budgets/:id', async (request, reply) => {
+    const params = parseOrRespond(BudgetIdParamSchema, request.params, reply);
+    if (!params) return;
+    return budgetsService.getById(DEMO_USER_ID, params.id);
+  });
+
   fastify.post('/api/budgets', async (request, reply) => {
     const body = parseOrRespond(CreateBudgetSchema, request.body, reply);
     if (!body) return;
@@ -35,7 +41,7 @@ export async function budgetsRoutes(fastify: FastifyInstance) {
     if (!params) return;
     const body = parseOrRespond(UpdateBudgetSchema, request.body, reply);
     if (!body) return;
-    return budgetsService.update(DEMO_USER_ID, params.id, body.amount);
+    return budgetsService.update(DEMO_USER_ID, params.id, body);
   });
 
   fastify.delete<{ Params: { id: string } }>('/api/budgets/:id', async (request, reply) => {

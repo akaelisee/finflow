@@ -1,6 +1,6 @@
 import React from "react";
 
-const ImportCsvPage = () => {
+export const ImportCsvPage = () => {
     return ( 
         <>
                 Import Csv Page        
