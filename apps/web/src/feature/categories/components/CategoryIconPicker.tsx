@@ -41,7 +41,7 @@ export function CategoryIconPicker({ value, onChange }: Props) {
   return (
     <div className="my-5">
       <p>Icônes</p>
-      <div className="mt-3 flex flex-wrap gap-2 justify-between">
+      <div className="mt-3 flex flex-wrap gap-2 justify-start lg:justify-between ">
         {AVAILABLE_ICONS.map(({ Icon, name }) => {
           const isSelected = value?.name === name;
           return (

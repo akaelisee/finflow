@@ -17,7 +17,7 @@ export function CategoryColorPicker({ value, onChange }: Props) {
   return (
     <div className="my-5">
       <p>Couleur</p>
-      <div className="mt-3 flex flex-row gap-2 justify-between">
+      <div className="mt-3 flex flex-row flex-wrap gap-2 justify-start lg:justify-between">
         {COLORS.map((color, index) => (
           <div
             key={color}

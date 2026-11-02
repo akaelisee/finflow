@@ -19,7 +19,7 @@ export function AlertDrop({
 
   return (
     <div className="fixed inset-0 bg-gray-500/75 z-50">
-      <div className="h-full flex items-center justify-center ml-20 lg:ml-72">
+      <div className="h-full flex items-center justify-center mx-auto ml-20 lg:ml-72">
         <div className="bg-white rounded-lg max-w-md">
           <div className="flex justify-center text-center pt-6 ">
             <div className="bg-red-200 p-2 rounded-full">
@@ -41,7 +41,7 @@ export function AlertDrop({
           <div className="mt-0 px-4 py-1 mb-6 sm:ml-4">
             <p className="text-sm text-gray-500">{message}</p>
           </div>
-          <div className="rounded-b-lg bg-gray-200 px-4 py-3 sm:flex sm:justify-between sm:gap-3 sm:flex-row-reverse sm:px-6">
+          <div className="flex flex-col gap-2 rounded-b-lg bg-gray-200 px-4 py-3 sm:justify-between sm:gap-3 sm:flex-row-reverse sm:px-6">
             <button
               onClick={onConfirm}
               type="button"

@@ -2,9 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+
 :root {
-  color-scheme: light dark;
+   color-scheme: light dark;
 }
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -91,6 +93,8 @@
   --text-body: 14px;
   --text-small: 12px;
   --text-muted: 11px;
+
+  --font-roboto: "Roboto", sans-serif;
 }
 
 /* Reset & base */

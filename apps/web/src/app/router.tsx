@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import { DashboardLayout } from '../shared/layout/DashboardLayout';
 import { DashboardPage } from '../pages/DashboardPage';
 import { TransactionsPage } from '../pages/TransactionsPage';
+import { TransactionDetailPage } from '../pages/TransactionDetailPage';
 import { AccountsPage } from '../pages/AccountsPage';
 import { BudgetsPage } from '../pages/BudgetsPage';
 import { CategoriesPage } from '../pages/CategoriesPage';
@@ -12,6 +13,7 @@ import { NotFoundPage } from '../pages/NotFoundPage';
 import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
 import { BudgetDetailPage } from '@/pages/BudgetDetailPage';
+import { AccountDetailPage } from '@/pages/AccountDetailPage';
 
 export const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
@@ -23,7 +25,9 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <DashboardPage /> },
       { path: 'transactions', element: <TransactionsPage /> },
+      {path:'transactions/:id', element: <TransactionDetailPage />},
       { path: 'accounts', element: <AccountsPage /> },
+      { path: 'accounts/:id', element: <AccountDetailPage /> },
       { path: 'imports', element: <ImportCsvPage /> },
       { path: 'budgets', element: <BudgetsPage /> },
       { path: 'budgets/:id', element: <BudgetDetailPage /> },

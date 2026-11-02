@@ -67,18 +67,18 @@ export function CategoryForm({
     <div className="relative z-10">
       <div className="fixed inset-0 bg-gray-500/75" />
       <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-        <div className="flex min-h-full items-end justify-center p-4 sm:items-center sm:p-0">
+        <div className="flex min-h-full items-end justify-center p-4 sm:items-center sm:p-0 mx-auto ml-16 lg:ml-72">
           <form
             onSubmit={handleSubmit}
-            className="relative bg-white rounded-lg shadow-xl sm:my-8 sm:w-full sm:max-w-xl"
+            className="relative bg-white rounded-lg shadow-xl w-[80%] sm:my-8 sm:w-full sm:max-w-xl"
           >
             {/* Header */}
             <div className="flex justify-between items-center p-5">
               <div className="flex flex-col">
-                <span className="font-bold text-xl">
+                <span className="font-bold text-md  lg:text-xl">
                   {isEditMode ? 'Modifier la catégorie' : 'Nouvelle catégorie'}
                 </span>
-                <span className="text-md text-gray-600">
+                <span className="text-sm text-gray-600 lg:text-md">
                   {isEditMode
                     ? 'Modifier votre catégorie personnalisée'
                     : 'Créer une catégorie personnalisée'}
@@ -87,7 +87,7 @@ export function CategoryForm({
               <button
                 type="button"
                 onClick={onClose}
-                className="bg-slate-200 p-2 border border-gray-300 rounded-md cursor-pointer"
+                className="bg-slate-200 p-1 border border-gray-300 rounded-md cursor-pointer lg:p-2"
               >
                 <IconX size={20} />
               </button>

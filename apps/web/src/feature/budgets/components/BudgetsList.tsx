@@ -7,7 +7,6 @@ type Props = {
 }
 
 export const BudgetsList = ({ budgets }: Props) => {
-  console.log('budget :>> ', budgets);
     return (
      
       <div className="flex flex-col gap-3">

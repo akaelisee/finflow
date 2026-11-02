@@ -15,7 +15,7 @@ export function Sidebar() {
                 <p className="uppercase text-gray-400 mb-3 text-sm text-center lg:text-left">
                   {group.title}
                 </p>
-                <ul className="flex flex-col gap-0.5 mb-6">
+                <ul className="flex justify-center items-center flex-col gap-0.5 mb-6 lg:items-start ">
                   {group.menu.map((item) => (
                     <li key={item.id}>
                       <SidebarLink to={item.link} title={item.title} icon={item.icon} />
@@ -28,7 +28,7 @@ export function Sidebar() {
         </div>
         <div>
           <hr className="border-1.5" />
-          <div className="flex flex-row gap-3 mt-4 justify-between items-center">
+          <div className="flex flex-row gap-3 mt-4 justify-center items-center lg:justify-between">
             <div className="flex gap-3 items-center">
               <div className="w-8 h-8 p-4 rounded-full bg-[#378ADD] relative mx-auto lg:mx-0">
                 <div className="absolute text-white font-normal text-sm top-1/2 -translate-x-1/2 -translate-y-1/2 left-1/2">
@@ -40,7 +40,7 @@ export function Sidebar() {
                 <span className="text-xs text-gray-500">Membre</span>
               </div>
             </div>
-            <img className="w-7 lg:w-5" src={DeconnexionIcon} alt="Déconnexion" />
+            <img className="w-7 lg:w-5 hidden lg:block" src={DeconnexionIcon} alt="Déconnexion" />
           </div>
         </div>
       </div>

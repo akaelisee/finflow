@@ -60,15 +60,15 @@ export function CategoriesList({
               <div className="flex gap-2">
                 <div
                   onClick={() => onUpdate(category)}
-                  className="cursor-pointer bg-[#f9f8f4] w-7 h-7 border text-center rounded-sm p-1"
+                  className="cursor-pointer bg-[#f9f8f4] w-10 h-10 border text-center rounded-sm p-1 relative"
                 >
-                  <IconEdit stroke={2} />
+                  <IconEdit stroke={2} className='absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2'/>
                 </div>
                 <div
                   onClick={() => handleDeleteClick(category.id)}
-                  className="cursor-pointer bg-[#f9f8f4] w-7 h-7 border text-center rounded-sm p-1"
+                  className="cursor-pointer bg-[#f9f8f4] w-10 h-10 border text-center rounded-sm p-1 relative"
                 >
-                  <IconTrash stroke={2} />
+                  <IconTrash className='absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2' stroke={2} />
                 </div>
               </div>
             </div>
