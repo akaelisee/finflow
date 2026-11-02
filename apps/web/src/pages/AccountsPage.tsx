@@ -1,19 +1,36 @@
-import { useState } from 'react';
-import { useAccounts, AccountsList, AddAccountModal } from '@/features/accounts';
-import { Button } from '@/shared/ui';
+
+import { AccountsRowsList, useAccounts } from '@/feature/accounts';
+import { Button } from '@/shared/ui/Button';
+import { IconPlus, IconDots, IconBuildingBank } from '@tabler/icons-react';
+import { Loading } from '@/shared/ui/Loading';
 
 export function AccountsPage() {
-  const { data: accounts, isLoading } = useAccounts();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { accounts, setAccounts, isLoading, error } = useAccounts();
+
+    if (isLoading) return <Loading />;
+    if (error) return <p>Erreur : {error.message}</p>;
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Comptes</h1>
-        <Button onClick={() => setIsModalOpen(true)}>Ajouter un compte</Button>
-      </div>
-      <AccountsList accounts={accounts ?? []} isLoading={isLoading} />
-      <AddAccountModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <div className="min-w-0 px-6 py-5">
+           {/* En-tête */}
+        <div className="flex justify-between relative z-0 mb-10">
+          <div>
+            <p className="text-2xl font-semibold">Comptes</p>
+            <span>Organisez vos dépenses avec des Comptes personnalisées</span>
+          </div>
+            <Button 
+              variant="danger" 
+              icon={<IconPlus size={16} />}
+            //  onClick={openCreateForm}
+              className="flex flex-row gap-1 bg-blue-500 items-center cursor-pointer text-white rounded-md p-2"
+              >
+              Nouvelle Comptes
+            </Button>
+        </div>
+
+        <AccountsRowsList 
+          accounts={accounts}
+        />
     </div>
   );
 }

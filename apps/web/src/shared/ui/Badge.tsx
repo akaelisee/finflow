@@ -1,28 +1,30 @@
-import type { HTMLAttributes } from 'react';
-import { cn } from '@/shared/lib/cn';
+import type { ReactNode } from 'react';
 
-type BadgeVariant = 'neutral' | 'success' | 'warning' | 'danger';
+type Variant = 'info' | 'success' | 'danger' | 'warning' | 'neutral';
 
-interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
-  variant?: BadgeVariant;
-}
-
-const variantClasses: Record<BadgeVariant, string> = {
-  neutral: 'bg-gray-100 text-gray-700',
-  success: 'bg-green-100 text-green-700',
-  warning: 'bg-amber-100 text-amber-700',
-  danger: 'bg-red-100 text-red-700',
+type Props = {
+  variant?: Variant;
+  children: ReactNode;
 };
 
-export function Badge({ className, variant = 'neutral', ...props }: BadgeProps) {
+const VARIANT_CLASSES: Record<Variant, string> = {
+  info: 'bg-primary-bg text-primary-text',
+  success: 'bg-success-bg text-success-hover',
+  danger: 'bg-danger-bg text-danger-hover',
+  warning: 'bg-warning-bg text-warning-hover',
+  neutral: 'bg-surface-1 text-text-secondary',
+};
+
+export function Badge({ variant = 'neutral', children }: Props) {
   return (
     <span
-      className={cn(
-        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-        variantClasses[variant],
-        className,
-      )}
-      {...props}
-    />
+      className={`
+        inline-flex items-center px-2.5 py-0.5
+        text-xs font-medium rounded-full
+        ${VARIANT_CLASSES[variant]}
+      `}
+    >
+      {children}
+    </span>
   );
 }

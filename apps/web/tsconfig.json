@@ -5,18 +5,27 @@
 //     { "path": "./tsconfig.node.json" }
 //   ]
 // }
-
 {
   "extends": "../../tsconfig.base.json",
+
   "compilerOptions": {
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
     "types": ["vite/client"],
     "noEmit": true,
+    "ignoreDeprecations": "6.0",
+
+    "baseUrl": ".",
+
     "paths": {
       "@finflow/shared": ["../../packages/shared/src"],
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*", "vite.config.ts", "vitest.config.ts"]
+
+  "include": [
+    "src/**/*",
+    "vite.config.ts",
+    "vitest.config.ts"
+  ]
 }

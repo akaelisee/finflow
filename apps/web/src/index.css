@@ -2,11 +2,108 @@
 @tailwind components;
 @tailwind utilities;
 
+
 :root {
-  color-scheme: light dark;
+   color-scheme: light dark;
+}
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* ==========================================================
+     COULEURS SÉMANTIQUES
+     ========================================================== */
+  --color-primary: #378ADD;
+  --color-primary-hover: #185FA5;
+  --color-primary-bg: #E6F1FB;
+  --color-primary-border: #B5D4F4;
+  --color-primary-text: #0C447C;
+
+  --color-success: #0F6E56;
+  --color-success-hover: #085041;
+  --color-success-bg: #E1F5EE;
+  --color-success-border: #9FE1CB;
+
+  --color-danger: #A32D2D;
+  --color-danger-hover: #791F1F;
+  --color-danger-bg: #FCEBEB;
+  --color-danger-border: #F7C1C1;
+
+  --color-warning: #BA7517;
+  --color-warning-hover: #854F0B;
+  --color-warning-bg: #FAEEDA;
+  --color-warning-border: #FAC775;
+
+  /* ==========================================================
+     SURFACES ET BORDURES
+     ========================================================== */
+  --color-surface-1: #F9F8F4;        /* Fond page */
+  --color-surface-2: #FFFFFF;        /* Cartes, panneaux */
+
+  --color-border: #D5D3CB;           /* Hairline 0.5px */
+  --color-border-strong: #B3B0A5;    /* Focus, hover */
+
+  /* ==========================================================
+     TEXTE
+     ========================================================== */
+  --color-text-primary: #1E1E1B;
+  --color-text-secondary: #5F5E5A;
+  --color-text-muted: #888780;
+
+  /* ==========================================================
+     PALETTE POUR CATÉGORIES
+     ========================================================== */
+  --color-cat-blue: #378ADD;
+  --color-cat-coral: #D85A30;
+  --color-cat-teal: #1D9E75;
+  --color-cat-amber: #BA7517;
+  --color-cat-purple: #7F77DD;
+  --color-cat-pink: #D4537E;
+  --color-cat-red: #E24B4A;
+  --color-cat-green: #639922;
+  --color-cat-gray: #5F5E5A;
+
+  /* ==========================================================
+     ESPACEMENTS (multiples de 4)
+     ========================================================== */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+
+  /* ==========================================================
+     RADIUS
+     ========================================================== */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-base: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* ==========================================================
+     TYPOGRAPHIE
+     ========================================================== */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  --text-h1: 30px;
+  --text-h2: 22px;
+  --text-h3: 16px;
+  --text-body: 14px;
+  --text-small: 12px;
+  --text-muted: 11px;
+
+  --font-roboto: "Roboto", sans-serif;
 }
 
+/* Reset & base */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-  margin: 0;
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  color: var(--color-text-primary);
+  background: var(--color-surface-2);
+  -webkit-font-smoothing: antialiased;
 }

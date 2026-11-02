@@ -2,11 +2,15 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "../../",
     "types": ["node"],
     "paths": {
       "@finflow/shared": ["../../packages/shared/src"]
     }
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*",
+    "prisma/**/*",
+    "../../packages/shared/src/**/*"
+  ]
 }

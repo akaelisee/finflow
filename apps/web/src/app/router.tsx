@@ -1,39 +1,39 @@
-import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
-import { useAuthStore } from '@/features/auth';
-import { AppLayout } from '@/pages/AppLayout';
-import { LoginPage } from '@/pages/LoginPage';
-import { RegisterPage } from '@/pages/RegisterPage';
-import { DashboardPage } from '@/pages/DashboardPage';
-import { AccountsPage } from '@/pages/AccountsPage';
-import { TransactionsPage } from '@/pages/TransactionsPage';
-import { BudgetsPage } from '@/pages/BudgetsPage';
-import { ImportPage } from '@/pages/ImportPage';
-import { NotFoundPage } from '@/pages/NotFoundPage';
-
-// eslint-disable-next-line react-refresh/only-export-components -- route guard lives next to the router it guards
-function ProtectedRoute() {
-  const isAuthenticated = useAuthStore((state) => state.accessToken !== null);
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
-}
+import { createBrowserRouter } from 'react-router-dom';
+import { DashboardLayout } from '../shared/layout/DashboardLayout';
+import { DashboardPage } from '../pages/DashboardPage';
+import { TransactionsPage } from '../pages/TransactionsPage';
+import { TransactionDetailPage } from '../pages/TransactionDetailPage';
+import { AccountsPage } from '../pages/AccountsPage';
+import { BudgetsPage } from '../pages/BudgetsPage';
+import { CategoriesPage } from '../pages/CategoriesPage';
+import { SettingsPage } from '../pages/SettingsPage';
+import { HelpPage } from '../pages/HelpPage';
+import { ImportCsvPage } from '../pages/ImportCsvPage';
+import { NotFoundPage } from '../pages/NotFoundPage';
+import { LoginPage } from '../pages/LoginPage';
+import { RegisterPage } from '../pages/RegisterPage';
+import { BudgetDetailPage } from '@/pages/BudgetDetailPage';
+import { AccountDetailPage } from '@/pages/AccountDetailPage';
 
 export const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
   { path: '/register', element: <RegisterPage /> },
   {
-    element: <ProtectedRoute />,
+    path: '/',
+    element: <DashboardLayout />,
+    errorElement: <NotFoundPage />,
     children: [
-      {
-        element: <AppLayout />,
-        children: [
-          { index: true, element: <Navigate to="/dashboard" replace /> },
-          { path: 'dashboard', element: <DashboardPage /> },
-          { path: 'accounts', element: <AccountsPage /> },
-          { path: 'transactions', element: <TransactionsPage /> },
-          { path: 'budgets', element: <BudgetsPage /> },
-          { path: 'import', element: <ImportPage /> },
-        ],
-      },
+      { index: true, element: <DashboardPage /> },
+      { path: 'transactions', element: <TransactionsPage /> },
+      {path:'transactions/:id', element: <TransactionDetailPage />},
+      { path: 'accounts', element: <AccountsPage /> },
+      { path: 'accounts/:id', element: <AccountDetailPage /> },
+      { path: 'imports', element: <ImportCsvPage /> },
+      { path: 'budgets', element: <BudgetsPage /> },
+      { path: 'budgets/:id', element: <BudgetDetailPage /> },
+      { path: 'categories', element: <CategoriesPage /> },
+      { path: 'settings', element: <SettingsPage /> },
+      { path: 'help', element: <HelpPage /> },
     ],
   },
-  { path: '*', element: <NotFoundPage /> },
 ]);

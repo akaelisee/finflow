@@ -11,6 +11,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import { subMonths } from 'date-fns';
 
 const prisma = new PrismaClient();
 
@@ -36,6 +37,39 @@ const DEFAULT_CATEGORIES = [
   { name: 'Revenus',      color: '#059669', icon: 'trending-up' },
 ];
 
+const GROCERY_MERCHANTS = ['Carrefour City', 'Franprix', 'Monoprix', 'Intermarché'];
+const TRANSPORT_MERCHANTS = ['SNCF Voyageurs', 'Uber', 'RATP - Navigo', 'Total Access'];
+const RESTAURANT_MERCHANTS = ['Uber Eats', 'Deliveroo', 'Le Bistrot Parisien', 'Sushi Shop'];
+
+const MISC_EXPENSES = [
+  { label: 'Amazon', category: 'Vêtements', min: 3_000, max: 15_000 },
+  { label: 'Pharmacie du Centre', category: 'Santé', min: 800, max: 4_500 },
+  { label: 'Décathlon', category: 'Loisirs', min: 2_000, max: 9_000 },
+  { label: 'Cinéma UGC', category: 'Loisirs', min: 900, max: 3_500 },
+];
+
+// Nombre de mois (dont le mois courant) sur lesquels générer les transactions.
+const MONTHS_BACK = 6;
+
+// ----------------------------------------------------------------------------
+// HELPERS
+// ----------------------------------------------------------------------------
+
+/** Entier aléatoire entre `min` et `max` inclus. */
+function randomInt(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function pick<T>(items: T[]): T {
+  const item = items[randomInt(0, items.length - 1)];
+  if (item === undefined) throw new Error('Liste vide');
+  return item;
+}
+
+function monthKey(year: number, month: number): string {
+  return `${year}-${String(month + 1).padStart(2, '0')}`;
+}
+
 // ----------------------------------------------------------------------------
 // MAIN
 // ----------------------------------------------------------------------------
@@ -55,6 +89,8 @@ async function main() {
   console.log('👤 Création de l\'utilisateur de test…');
   const user = await prisma.user.create({
     data: {
+      // Id fixe pour matcher TEMP_USER_ID (apps/api/src/lib/constants.ts) tant qu'il n'y a pas d'auth
+      id: '11111111-1111-1111-1111-111111111111',
       email: 'demo@finflow.com',
       // ⚠️ Password hardcodé pour le dev. À l'étape 5 on utilisera bcrypt.
       passwordHash: '$2b$10$placeholder.hash.will.be.replaced.at.step.5',
@@ -78,14 +114,14 @@ async function main() {
   );
   console.log(`   ✓ ${categories.length} catégories créées`);
 
-  // Petits helpers pour retrouver une catégorie par nom
+  // Petit helper pour retrouver une catégorie par nom
   const catByName = (name: string) => {
     const found = categories.find((c) => c.name === name);
     if (!found) throw new Error(`Catégorie introuvable : ${name}`);
     return found;
   };
 
-  // ---- 4. Créer 2 comptes bancaires ----
+  // ---- 4. Créer 3 comptes bancaires ----
   console.log('💳 Création des comptes bancaires…');
   const bnpAccount = await prisma.account.create({
     data: {
@@ -107,77 +143,186 @@ async function main() {
       color: '#1D9E75',
     },
   });
+  const boursoramaAccount = await prisma.account.create({
+    data: {
+      userId: user.id,
+      name: 'Compte Boursorama',
+      bank: 'Boursorama Banque',
+      type: 'CHECKING',
+      initialBalance: 85_000, // 850,00 €
+      color: '#E24B4A',
+    },
+  });
   console.log(`   ✓ ${bnpAccount.name}`);
   console.log(`   ✓ ${livretAccount.name}`);
+  console.log(`   ✓ ${boursoramaAccount.name}`);
 
-  // ---- 5. Créer ~30 transactions sur 2 mois ----
-  console.log('💸 Création des transactions…');
-
-  // On génère les 2 derniers mois complets
-  const now = new Date();
-  const currentMonth = now.getMonth();
-  const currentYear = now.getFullYear();
-  const dateInMonth = (year: number, month: number, day: number) =>
-    new Date(year, month, day);
-
-  const transactionsData = [
-    // ---- Mois -1 ----
-    { date: dateInMonth(currentYear, currentMonth - 1, 1),  amount: 320_000,  label: 'VIR ACME CORP SALAIRE',    category: 'Revenus' },
-    { date: dateInMonth(currentYear, currentMonth - 1, 3),  amount: -55_000,  label: 'EDF',                        category: 'Logement' },
-    { date: dateInMonth(currentYear, currentMonth - 1, 5),  amount: -68_500,  label: 'Loyer',                      category: 'Logement' },
-    { date: dateInMonth(currentYear, currentMonth - 1, 8),  amount: -4_280,   label: 'CARREFOUR CITY',            category: 'Alimentation' },
-    { date: dateInMonth(currentYear, currentMonth - 1, 10), amount: -8_950,   label: 'SNCF Voyageurs',            category: 'Transports' },
-    { date: dateInMonth(currentYear, currentMonth - 1, 12), amount: -3_200,   label: 'Uber Eats',                 category: 'Restaurants' },
-    { date: dateInMonth(currentYear, currentMonth - 1, 15), amount: -1_599,   label: 'Netflix',                    category: 'Abonnements' },
-    { date: dateInMonth(currentYear, currentMonth - 1, 18), amount: -2_430,   label: 'Pharmacie',                  category: 'Santé' },
-    { date: dateInMonth(currentYear, currentMonth - 1, 20), amount: -12_050,  label: 'Amazon',                     category: 'Vêtements' },
-    { date: dateInMonth(currentYear, currentMonth - 1, 22), amount: -5_680,   label: 'Restaurant chinois',        category: 'Restaurants' },
-    { date: dateInMonth(currentYear, currentMonth - 1, 25), amount: -1_850,   label: 'Uber',                       category: 'Transports' },
-    { date: dateInMonth(currentYear, currentMonth - 1, 27), amount: -3_490,   label: 'Franprix',                   category: 'Alimentation' },
-    { date: dateInMonth(currentYear, currentMonth - 1, 28), amount: -9_990,   label: 'Décathlon',                  category: 'Loisirs' },
-    { date: dateInMonth(currentYear, currentMonth - 1, 30), amount: -1_299,   label: 'Spotify Premium',           category: 'Abonnements' },
-
-    // ---- Mois courant ----
-    { date: dateInMonth(currentYear, currentMonth, 1),  amount: 320_000,  label: 'VIR ACME CORP SALAIRE',    category: 'Revenus' },
-    { date: dateInMonth(currentYear, currentMonth, 2),  amount: -1_599,   label: 'Netflix',                    category: 'Abonnements' },
-    { date: dateInMonth(currentYear, currentMonth, 3),  amount: -68_500,  label: 'Loyer',                      category: 'Logement' },
-    { date: dateInMonth(currentYear, currentMonth, 4),  amount: -8_950,   label: 'SNCF Voyageurs',            category: 'Transports' },
-    { date: dateInMonth(currentYear, currentMonth, 5),  amount: -4_820,   label: 'CARREFOUR CITY',            category: 'Alimentation' },
-    { date: dateInMonth(currentYear, currentMonth, 7),  amount: -3_150,   label: 'Deliveroo',                  category: 'Restaurants' },
-    { date: dateInMonth(currentYear, currentMonth, 9),  amount: -1_850,   label: 'Uber',                       category: 'Transports' },
-    { date: dateInMonth(currentYear, currentMonth, 11), amount: -2_990,   label: 'Franprix',                   category: 'Alimentation' },
-    { date: dateInMonth(currentYear, currentMonth, 13), amount: -6_720,   label: 'Restaurant italien',        category: 'Restaurants' },
-    { date: dateInMonth(currentYear, currentMonth, 15), amount: -1_299,   label: 'Spotify Premium',           category: 'Abonnements' },
-    { date: dateInMonth(currentYear, currentMonth, 17), amount: -3_480,   label: 'Monoprix',                   category: 'Alimentation' },
-    { date: dateInMonth(currentYear, currentMonth, 18), amount: -55_000,  label: 'EDF',                        category: 'Logement' },
-    { date: dateInMonth(currentYear, currentMonth, 20), amount: -2_490,   label: 'Uber Eats',                  category: 'Restaurants' },
-    { date: dateInMonth(currentYear, currentMonth, 22), amount: -1_500,   label: 'Métro RATP',                category: 'Transports' },
-    { date: dateInMonth(currentYear, currentMonth, 24), amount: -8_500,   label: 'Cinéma UGC',                 category: 'Loisirs' },
-  ];
-
-  for (const t of transactionsData) {
-    await prisma.transaction.create({
-      data: {
-        accountId: bnpAccount.id,
-        categoryId: catByName(t.category).id,
-        amount: t.amount,
-        label: t.label,
-        transactionDate: t.date,
-        importedFrom: 'MANUAL',
-      },
-    });
+  /** La majorité des dépenses courantes tombent sur le compte courant BNP. */
+  function pickCurrentAccountId(): string {
+    const roll = Math.random();
+    if (roll < 0.75) return bnpAccount.id;
+    if (roll < 0.95) return boursoramaAccount.id;
+    return livretAccount.id;
   }
-  console.log(`   ✓ ${transactionsData.length} transactions créées`);
 
-  // ---- 6. Créer quelques budgets pour le mois en cours ----
+  // ---- 5. Générer les transactions sur les 6 derniers mois ----
+  console.log('💸 Génération des transactions…');
+
+  type TransactionDraft = {
+    date: Date;
+    amount: number;
+    label: string;
+    category: string;
+    accountId: string;
+  };
+
+  const drafts: TransactionDraft[] = [];
+  const now = new Date();
+
+  for (let monthsAgo = MONTHS_BACK - 1; monthsAgo >= 0; monthsAgo--) {
+    const monthDate = subMonths(now, monthsAgo);
+    const year = monthDate.getFullYear();
+    const month = monthDate.getMonth();
+    const dayInMonth = (day: number) => new Date(year, month, day);
+
+    // Salaire, le 1er
+    drafts.push({
+      date: dayInMonth(1),
+      amount: 320_000,
+      label: 'VIR ACME CORP SALAIRE',
+      category: 'Revenus',
+      accountId: bnpAccount.id,
+    });
+
+    // Loyer, le 3
+    drafts.push({
+      date: dayInMonth(3),
+      amount: -68_500,
+      label: 'Loyer appartement',
+      category: 'Logement',
+      accountId: bnpAccount.id,
+    });
+
+    // Facture d'énergie, autour du 6
+    drafts.push({
+      date: dayInMonth(6),
+      amount: -randomInt(4_500, 7_000),
+      label: 'EDF',
+      category: 'Logement',
+      accountId: bnpAccount.id,
+    });
+
+    // Abonnements récurrents
+    drafts.push({
+      date: dayInMonth(5),
+      amount: -1_599,
+      label: 'Netflix',
+      category: 'Abonnements',
+      accountId: bnpAccount.id,
+    });
+    drafts.push({
+      date: dayInMonth(15),
+      amount: -1_299,
+      label: 'Spotify Premium',
+      category: 'Abonnements',
+      accountId: bnpAccount.id,
+    });
+
+    // Courses (6 à 8 fois par mois)
+    const groceryCount = randomInt(6, 8);
+    for (let g = 0; g < groceryCount; g++) {
+      drafts.push({
+        date: dayInMonth(randomInt(1, 28)),
+        amount: -randomInt(3_000, 6_000),
+        label: pick(GROCERY_MERCHANTS),
+        category: 'Alimentation',
+        accountId: pickCurrentAccountId(),
+      });
+    }
+
+    // Transports (4 à 6 fois par mois)
+    const transportCount = randomInt(4, 6);
+    for (let t = 0; t < transportCount; t++) {
+      drafts.push({
+        date: dayInMonth(randomInt(1, 28)),
+        amount: -randomInt(1_200, 9_000),
+        label: pick(TRANSPORT_MERCHANTS),
+        category: 'Transports',
+        accountId: pickCurrentAccountId(),
+      });
+    }
+
+    // Restaurants / livraison (4 à 6 fois par mois)
+    const restaurantCount = randomInt(4, 6);
+    for (let r = 0; r < restaurantCount; r++) {
+      drafts.push({
+        date: dayInMonth(randomInt(1, 28)),
+        amount: -randomInt(1_500, 7_000),
+        label: pick(RESTAURANT_MERCHANTS),
+        category: 'Restaurants',
+        accountId: pickCurrentAccountId(),
+      });
+    }
+
+    // Dépenses diverses (2 à 4 fois par mois)
+    const miscCount = randomInt(2, 4);
+    for (let m = 0; m < miscCount; m++) {
+      const expense = pick(MISC_EXPENSES);
+      drafts.push({
+        date: dayInMonth(randomInt(1, 28)),
+        amount: -randomInt(expense.min, expense.max),
+        label: expense.label,
+        category: expense.category,
+        accountId: pickCurrentAccountId(),
+      });
+    }
+
+    // Versement épargne, un mois sur deux
+    if (monthsAgo % 2 === 0) {
+      drafts.push({
+        date: dayInMonth(2),
+        amount: randomInt(10_000, 30_000),
+        label: 'Versement mensuel épargne',
+        category: 'Épargne',
+        accountId: livretAccount.id,
+      });
+    }
+  }
+
+  const transactionsData = drafts.map((draft) => ({
+    accountId: draft.accountId,
+    categoryId: catByName(draft.category).id,
+    amount: draft.amount,
+    label: draft.label,
+    transactionDate: draft.date,
+    importedFrom: 'MANUAL' as const,
+  }));
+
+  await prisma.transaction.createMany({ data: transactionsData });
+  console.log(`   ✓ ${transactionsData.length} transactions créées sur ${MONTHS_BACK} mois`);
+
+  // ---- 6. Créer des budgets sur le mois en cours et le mois précédent ----
   console.log('🎯 Création des budgets…');
-  const currentMonthKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+
+  const currentMonthKey = monthKey(now.getFullYear(), now.getMonth());
+  const previousMonthDate = subMonths(now, 1);
+  const previousMonthKey = monthKey(previousMonthDate.getFullYear(), previousMonthDate.getMonth());
+
   const budgetsData = [
-    { category: 'Alimentation', amount: 50_000 },
-    { category: 'Logement',     amount: 130_000 },
-    { category: 'Transports',   amount: 15_000 },
-    { category: 'Restaurants',  amount: 20_000 },
-    { category: 'Loisirs',      amount: 10_000 },
+    // Mois courant — certains montants sont volontairement serrés pour
+    // tester l'UI de dépassement (loyer + énergie dépassent souvent 70 000).
+    { month: currentMonthKey, category: 'Logement', amount: 70_000 },
+    { month: currentMonthKey, category: 'Alimentation', amount: 25_000 },
+    { month: currentMonthKey, category: 'Transports', amount: 20_000 },
+    { month: currentMonthKey, category: 'Restaurants', amount: 20_000 },
+    { month: currentMonthKey, category: 'Loisirs', amount: 15_000 },
+
+    // Mois précédent
+    { month: previousMonthKey, category: 'Logement', amount: 75_000 },
+    { month: previousMonthKey, category: 'Alimentation', amount: 25_000 },
+    { month: previousMonthKey, category: 'Transports', amount: 20_000 },
+    { month: previousMonthKey, category: 'Abonnements', amount: 3_500 },
+    { month: previousMonthKey, category: 'Santé', amount: 5_000 },
   ];
 
   for (const b of budgetsData) {
@@ -185,18 +330,18 @@ async function main() {
       data: {
         userId: user.id,
         categoryId: catByName(b.category).id,
-        month: currentMonthKey,
+        month: b.month,
         amount: b.amount,
       },
     });
   }
-  console.log(`   ✓ ${budgetsData.length} budgets créés pour ${currentMonthKey}`);
+  console.log(`   ✓ ${budgetsData.length} budgets créés (${previousMonthKey} et ${currentMonthKey})`);
 
   console.log('\n✅ Seed terminé avec succès !\n');
   console.log('📊 Résumé :');
   console.log(`   👤 1 utilisateur : demo@finflow.com`);
   console.log(`   🏷️  ${categories.length} catégories`);
-  console.log(`   💳 2 comptes bancaires`);
+  console.log(`   💳 3 comptes bancaires`);
   console.log(`   💸 ${transactionsData.length} transactions`);
   console.log(`   🎯 ${budgetsData.length} budgets`);
   console.log('\n💡 Ouvre Prisma Studio pour voir les données :');
