@@ -10,8 +10,6 @@ type Props = {
 
 export const AccountsRowsList = ({accounts}: Props) => {
 
-  console.log(accounts);
-
     return(
      <div className="grid grid-cols-2 gap-3.5">
         {/* Carte compte */}
@@ -55,15 +53,6 @@ export const AccountsRowsList = ({accounts}: Props) => {
             </div>
           ))
         }
-
-        {/* Carte "ajouter" */}
-        <div className="flex min-h-[200px] flex-col items-center justify-center gap-2.5 rounded-lg border border-dashed border-[#CFCCC0] bg-[#F9F8F4] p-4 text-center">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#79776F]">
-            <IconPlus size={22} stroke={1.75} />
-          </div>
-          <p className="text-sm font-medium">Ajouter un compte</p>
-          <p className="text-xs text-[#79776F]">BNP, Société Générale, Boursorama…</p>
-        </div>
       </div>
 
     )

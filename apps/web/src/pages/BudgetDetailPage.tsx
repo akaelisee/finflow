@@ -9,8 +9,6 @@ export function BudgetDetailPage() {
   const { isLoading, budget, setBudget, error } = useBudget(id!);
   const { budgets, setBudgets } = useBudgets();
 
-  console.log(budget);
-
   const { update } = useUpdateBudget({
     onSuccess: (updated) => {
       setBudget(updated);
